@@ -1379,25 +1379,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
+    <!-- License Notice -->
     <div class="license-notice">
-    <span>UK Optometric Clinical Record Card - Professional Edition with Patient Search</span>
-    <span class="badge">
-        <svg fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-        </svg>
-        Secure Record Management
-    </span>
-    <!-- NEW: Add logout button -->
-    <button onclick="logout()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 12px; border-radius: 15px; font-size: 11px; cursor: pointer; margin-left: 12px;">
-        <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 4px;">
-            <path d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 012 2v2h-2V4H4v16h10v-2h2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2h10z"/>
-        </svg>
-        Logout
-    </button>
-</div>
+        <span>UK Optometric Clinical Record Card - Professional Edition with Patient Search</span>
+        <span class="badge">
+            <svg fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            Secure Record Management
+        </span>
+    </div>
 
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
@@ -1541,10 +1534,6 @@
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" placeholder="Email address">
-                    </div>
-                        <div class="form-group">
-                        <label for="nhsNumber">NHS Number</label>
-                    <input type="text" id="nhsNumber" name="nhsNumber" placeholder="e.g. 123 456 7890">
                     </div>
                 </div>
                 <div class="form-row three-col">
@@ -2353,15 +2342,8 @@
     </div>
 
     <script>
-    // SUPABASE AUTHENTICATION INTEGRATION FOR MAIN APP
-    // Initialize Supabase connection
-    const SUPABASE_URL = 'https://igwkednqywtwwxmsrglf.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlnd2tlZG5xeXd0d3d4bXNyZ2xmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTk3ODEsImV4cCI6MjA2NjQzNTc4MX0.A56I6sPvYgJ166cmUetnW9sisArWnPeifo4EBy8tcLI';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    let currentUser = null;
-
-    // Enhanced Application State Management with Patient Records
-    let appState = {
+        // Enhanced Application State Management with Patient Records
+        let appState = {
             calculatorUpdateTimeout: null,
             pricingMode: 'auto', // 'auto' or 'manual'
             manualPrices: {
@@ -5510,148 +5492,16 @@
         window.downloadManagementReport = downloadManagementReport;
         window.downloadPaymentSummary = downloadPaymentSummary;
 
-       // Enhanced Application Initialization with Supabase Authentication
-// Enhanced Application Initialization with Supabase Authentication
-async function initializeApp() {
-    try {
-        console.log('🚀 Initializing enhanced optometry application with Supabase authentication...');
-        
-        // Give Supabase more time to establish session, especially from email confirmations
-        let session = null;
-        let attempts = 0;
-        const maxAttempts = 5;
-        
-        // Try multiple times to get the session
-        while (!session && attempts < maxAttempts) {
-            console.log(`🔄 Checking for session (attempt ${attempts + 1}/${maxAttempts})...`);
-            
-            const { data: { session: currentSession } } = await supabase.auth.getSession();
-            session = currentSession;
-            
-            if (!session && attempts < maxAttempts - 1) {
-                // Wait before trying again
-                await new Promise(resolve => setTimeout(resolve, 1500));
-            }
-            attempts++;
-        }
-        
-        if (!session) {
-            // Still no session after multiple attempts
-            console.log('❌ No user session found after multiple attempts, redirecting to login...');
-            window.location.href = 'index.html';
-            return;
-        }
-        
-        // User is authenticated!
-        currentUser = session.user;
-        console.log('✅ User authenticated:', currentUser.email);
-        
-        // Set today's date
-        const dateField = document.getElementById('examDate');
-        if (dateField) {
-            dateField.value = new Date().toISOString().split('T')[0];
-        }
-        
-        // Setup all enhanced functionality
-        setupEventListeners();
-        setupSearchEventListeners();
-        setupInteractivePricing();
-        setupFileUpload();
-        
-        console.log('✅ Enhanced application initialized successfully');
-        
-        // Load demo data
-        setTimeout(() => {
-            loadDemoData();
-        }, 500);
-        
-        // Show welcome message
-        setTimeout(() => {
-            console.log('🎉 === ENHANCED OPTOMETRY SYSTEM WITH SUPABASE READY ===');
-            showNotification(`Welcome ${currentUser.email}! System Ready! 🎉`, 'success');
-        }, 1000);
-        
-    } catch (error) {
-        console.error('❌ Application initialization error:', error);
-        showNotification('Application startup error - redirecting to login', 'warning');
-        
-        // If error, redirect to login
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 2000);
-    }
-}
-
-    // ADD THE HELPER FUNCTION HERE (after line 5537)
-    function continueAppInitialization() {
-        // Set today's date
-        const dateField = document.getElementById('examDate');
-        if (dateField) {
-            dateField.value = new Date().toISOString().split('T')[0];
-        }
-        
-        // Setup all enhanced functionality
-        setupEventListeners();
-        setupSearchEventListeners();
-        setupInteractivePricing();
-        setupFileUpload();
-        
-        console.log('✅ Enhanced application initialized successfully');
-        
-        // Load demo data
-        setTimeout(() => {
-            loadDemoData();
-        }, 500);
-        
-        // Show welcome message
-        setTimeout(() => {
-            console.log('🎉 === ENHANCED OPTOMETRY SYSTEM WITH SUPABASE READY ===');
-            showNotification(`Welcome ${currentUser.email}! System Ready! 🎉`, 'success');
-        }, 1000);
-    }
-
-    // User is authenticated! (this continues the existing code)
-    currentUser = session.user;
-        
-        // User is authenticated!
-        currentUser = session.user;
-        console.log('✅ User authenticated:', currentUser.email);
-        
-        // Set today's date
-        const dateField = document.getElementById('examDate');
-        if (dateField) {
-            dateField.value = new Date().toISOString().split('T')[0];
-        }
-        
-        // Setup all enhanced functionality
-        setupEventListeners();
-        setupSearchEventListeners();
-        setupInteractivePricing();
-        setupFileUpload();
-        
-        console.log('✅ Enhanced application initialized successfully');
-        
-        // Load demo data
-        setTimeout(() => {
-            loadDemoData();
-        }, 500);
-        
-        // Show welcome message
-        setTimeout(() => {
-            console.log('🎉 === ENHANCED OPTOMETRY SYSTEM WITH SUPABASE READY ===');
-            showNotification(`Welcome ${currentUser.email}! System Ready! 🎉`, 'success');
-        }, 1000);
-        
-    } catch (error) {
-        console.error('❌ Application initialization error:', error);
-        showNotification('Application startup error - redirecting to login', 'warning');
-        
-        // If error, redirect to login
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 2000);
-    }
-}
+        // Enhanced Application Initialization
+        async function initializeApp() {
+            try {
+                console.log('🚀 Initializing enhanced optometry application with patient search and delete functionality...');
+                
+                // Set today's date
+                const dateField = document.getElementById('examDate');
+                if (dateField) {
+                    dateField.value = new Date().toISOString().split('T')[0];
+                }
                 
                 // Setup all enhanced functionality
                 setupEventListeners();
@@ -5717,38 +5567,6 @@ async function initializeApp() {
         console.log('%c🎯 Try searching by name, DOB, or address', 'color: #8b5cf6; font-weight: bold;');
         console.log('%c📥 Download: downloadLabOrder(), downloadManagementReport(), downloadPaymentSummary()', 'color: #f59e0b; font-weight: bold;');
         console.log('%c🗑️ Delete: confirmDeletePatient() - includes export option for safety', 'color: #ef4444; font-weight: bold;');
-// LOGOUT FUNCTION - Add this after line 5630, before </script>
-        async function logout() {
-            try {
-                console.log('🚪 Logging out user...');
-                
-                const { error } = await supabase.auth.signOut();
-                
-                if (error) {
-                    console.error('❌ Logout error:', error);
-                    showNotification('Error logging out: ' + error.message, 'error');
-                } else {
-                    console.log('✅ User logged out successfully');
-                    showNotification('Logged out successfully', 'success');
-                    
-                    // Redirect to home page (index.html)
-                    setTimeout(() => {
-                        window.location.href = '/';
-                    }, 1000);
-                }
-            } catch (error) {
-                console.error('❌ Logout error:', error);
-                showNotification('Error logging out', 'error');
-                
-                // Force redirect even if there's an error
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 2000);
-            }
-        }
-
-        // Make logout function available globally
-        window.logout = logout;
     </script>
 </body>
 </html>
